@@ -1,0 +1,45 @@
+﻿<link rel="import" href="../polymer/polymer.html" />
+<link rel="import" href="../polymerfire/polymerfire.html" />
+<link rel="import" href="../paper-card/paper-card.html" />
+<link rel="import" href="../paper-spinner/paper-spinner.html"/>
+<link rel="import" href="../iron-flex-layout/iron-flex-layout-classes.html" />
+<dom-module id="poke-list">
+    <template>
+        <style is="custom-style" include="iron-flex iron-flex-alignment">
+            .poke-container{max-width:1024px; margin:auto;}
+            .poke-container > *{min-width:200px; margin:8px;}
+        </style>
+        <firebase-query order-by-child="id"
+                        limit-to-first="[[limit]]"
+                        path="/pokemon"
+                           data="{{pokemon}}">
+        </firebase-query>
+
+        <h4>[[count]] Pokemon </h4><paper-spinner active="{{loading}}"></paper-spinner>
+        <div class="poke-container horizontal layout wrap">
+            <template is="dom-repeat" items="[[pokemon]]" index-as="index" rendered-item-count="{{count}}" sort="ascend" initial-count="9">
+                <paper-card class="flex" heading="[[item.name]]" image="[[_format(item.sprites.front_default)]]" elevation="5"></paper-card>
+            </template>
+        </div>
+        
+    </template>
+    <script>
+        Polymer({
+            is: "poke-list",
+            properties: {
+                loading:{type:Boolean, notify:true,value:false},
+                limit: { type: Number, notify: true, value: 9 },
+                pokemon: { type: Array, notify: true }
+            },
+            ascend: function (a, b) {
+                return a.id - b.id;
+            },
+            _format: function (url) {
+                var imgNum = url.split("pokemon/")[1];
+                var baseUrl = "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/";
+
+                return baseUrl + imgNum;
+            }
+        })
+    </script>
+</dom-module>

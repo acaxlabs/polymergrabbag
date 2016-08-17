@@ -1,0 +1,28 @@
+﻿<link rel="import" href="../polymer/polymer.html" />
+<link rel="import" href="../google-signin/google-signin.html"/>
+
+
+<dom-module id="demo-signin">
+    <template>
+        <div>Signed In: [[signedIn]]</div>
+        <google-signin 
+                       client-id="930598502956-vptdeetkmcvtjirhf8ieqq80u4a1bmtl.apps.googleusercontent.com"
+                       signed-in="{{signedIn}}">
+        </google-signin>
+    </template>
+    <script>
+        Polymer({
+            is: "demo-signin",
+            properties: {
+                signedIn:{type:Boolean,notify:true,value:false}
+            },
+            listeners: {
+                "google-signin-success":"onSignIn"
+            },
+            onSignIn: function (e) {
+                console.log(e);
+            }
+            
+        })
+    </script>
+</dom-module>
