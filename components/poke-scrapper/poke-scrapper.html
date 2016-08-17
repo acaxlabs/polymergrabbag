@@ -1,0 +1,68 @@
+﻿<link rel="import" href="../polymer/polymer.html" />
+<link rel="import" href="../polymerfire/polymerfire.html" />
+<link rel="import" href="../iron-ajax/iron-ajax.html" />
+<link rel="import" href="../poke-list/poke-list.html" />
+<link rel="import" href="../paper-input/paper-input.html" />
+<link rel="import" href="../paper-button/paper-button.html" />
+<link rel="import" href="../paper-spinner/paper-spinner.html" />
+<dom-module id="poke-scrapper">
+    <template>
+        <style>
+            .container{margin:auto; max-width:512px;}
+            .container > paper-card{width:100%; margin:8px;}
+        </style>
+        <iron-ajax id="ajax"
+                   method="GET"
+                   last-response="{{_ajaxResponse}}"
+                   loading="{{loading}}">
+        </iron-ajax>
+        <div class="container">
+            <paper-card heading="Scrapper">
+                <div class="card-content">
+                    <paper-input label="start" value="{{start}}"></paper-input>
+                    <paper-input label="end" value="{{end}}"></paper-input>
+                </div>
+                <div class="card-actions">
+                    <paper-button on-click="_onScrap">Scrap</paper-button>
+                    <paper-spinner active="{{loading}}"></paper-spinner>
+                </div>
+            </paper-card>
+        </div>
+
+
+        <poke-list></poke-list>
+    </template>
+    <script>
+        Polymer({
+            is: "poke-scrapper",
+            properties: {
+                pokeurl: String,
+                start: Number,
+                end: Number
+            },
+            observers: [
+                "_onAjaxResponseChanged(_ajaxResponse)"
+            ],
+            _onScrap: function (e) {
+
+                this.count = this.start;
+                this.$.ajax.url = this.pokeurl + this.start;
+                this.$.ajax.generateRequest();
+            },
+            _onAjaxResponseChanged: function (pokemon) {
+                if (!pokemon) return;
+
+                if (!this.pokemons) {
+                    this.pokemons = []
+                }
+                this.set("name", pokemon.name);
+                this.set("pokemon", pokemon);
+
+                if (this.count++ == this.end) return;
+
+                this.$.ajax.url = this.pokeurl + this.count;
+                this.$.ajax.generateRequest();
+            }
+        })
+    </script>
+</dom-module>

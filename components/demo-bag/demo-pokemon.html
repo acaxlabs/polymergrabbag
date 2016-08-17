@@ -1,0 +1,99 @@
+﻿<link rel="import" href="../polymer/polymer.html" />
+<link rel="import" href="../polymerfire/polymerfire.html" />
+<link rel="import" href="../poke-list/poke-list.html" />
+<link rel="import" href="../google-map/google-map-elements.html" />
+<!--
+`<lithium-quote>` is an awesome element.
+
+Example:
+
+    <my-dom-module></my-dom-module>
+
+### Styling
+    No styling
+
+@element my-dom-module
+@demo demo/index.html
+-->
+<dom-module id="demo-pokemon">
+    <template>
+        <firebase-app 
+                      auth-domain="pokemontrainer-450a9.firebaseapp.com"
+                      database-url="https://pokemontrainer-450a9.firebaseio.com"
+                      api-key="AIzaSyB-eA8W2XRBL7MtiAYEOcmRE9nrMLmFuMI">
+        </firebase-app>
+        <poke-list limit="30" pokemon="{{pokemon}}" hidden></poke-list>
+
+        <google-map map="{{map}}" latitude="37.779"
+                    longitude="-122.3892"
+                    api-key="AIzaSyD1OHv_PJJo3biyNgSlMFyeNIQRz-9LH_A">
+            <template is="dom-repeat" items="{{results}}" as="marker" rendered-item-count="{{count}}" index-as="index">
+                <google-map-marker latitude="{{marker.latitude}}"
+                                   longitude="{{marker.longitude}}"
+                                   title="[[_getPokeName(index)]]"
+                                   icon="[[_getPokeImage(index)]]">
+                    <div>
+                       <div>Name: [[_getPokeName(index)]]</div>
+                        <div>Weight: [[_getPokeWt(index)]] kg</div>
+                        <div>Height: [[_getPokeHt(index)]] m</div>
+                        <div>Exp: [[_getPokeExp(index)]]</div>
+                    </div>
+                </google-map-marker>
+            </template>
+        </google-map>
+
+        <google-map-search map="[[map]]" query="[[query]]" results="{{results}}"></google-map-search>
+
+    </template>
+    <script>
+		Polymer({
+		    is: "demo-pokemon",
+			/*
+            * Fired when something happens.
+            * @event whoaDude(value)
+            */
+
+            /*
+            * Fired when something more happens.
+            * @event holyCrap
+            */
+		    properties:{
+                query:{type:String, notify:true, value:""}
+		    },
+		    observers: [
+                "_onPokemonChanged(pokemon.*)"
+		    ],
+			_getPokeName: function (index) {
+			    if (!this.pokemon || !this.pokemon[index]) return "pokestop";
+			    return this.pokemon[index].name;
+			},
+			_getPokeHt: function (index) {
+			    if (!this.pokemon || !this.pokemon[index]) return "N/A";
+			    return this.pokemon[index].height;
+			},
+			_getPokeWt: function (index) {
+			    if (!this.pokemon || !this.pokemon[index]) return "N/A";
+			    return this.pokemon[index].weight;
+			},
+			_getPokeExp: function (index) {
+			    if (!this.pokemon || !this.pokemon[index]) return "N/A";
+			    return this.pokemon[index].base_experience;
+			},
+			_getPokeImage: function (index) {
+			    if (!this.pokemon || !this.pokemon[index]) return "../../content/photo/pokestop.jpg";
+
+			    var url = this.pokemon[index].sprites.front_default;
+			    var imgNum = url.split("pokemon/")[1];
+			    var baseUrl = "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/";
+			    return baseUrl + imgNum;
+			},
+			_onPokemonChanged: function (changeRecord) {
+			    if (!changeRecord) return;
+
+			    if (changeRecord.base.length < 30) return;
+
+			    this.query = "pizza";
+			}
+		});
+    </script>
+</dom-module>

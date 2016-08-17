@@ -1,0 +1,61 @@
+﻿<link rel="import" href="../polymer/polymer.html" />
+<link rel="import" href="../polymerfire/firebase-app.html"/>
+<link rel="import" href="../polymerfire/firebase-query.html" />
+<link rel="import" href="../polymerfire/firebase-document.html"/>
+
+
+<!--<script src="https://www.gstatic.com/firebasejs/3.3.0/firebase.js"></script>
+<script>
+  // Initialize Firebase
+  var config = {
+    apiKey: "AIzaSyDAtTT046DPPTZB9Z6ZL3-yDg-HikdgqLo",
+    authDomain: "polymergrabbag.firebaseapp.com",
+    databaseURL: "https://polymergrabbag.firebaseio.com",
+    storageBucket: "polymergrabbag.appspot.com",
+  };
+  firebase.initializeApp(config);
+</script>-->
+
+
+<dom-module id="demo-firebase">
+    <template>
+        <firebase-app 
+                      auth-domain="polymergrabbag.firebaseapp.com"
+                      database-url="https://polymergrabbag.firebaseio.com"
+                      api-key="AIzaSyDAtTT046DPPTZB9Z6ZL3-yDg-HikdgqLo">
+        </firebase-app>
+        <firebase-query id="query"
+                        path="/characters"
+                        data="{{data}}">
+        </firebase-query>
+
+        <firebase-document id="doc"
+                        path="/characters/1"
+                        data="{{chars}}">
+        </firebase-document>
+
+        <template is="dom-repeat" items="{{data}}">
+            <div>Name: {{item.Name}}</div>
+            <div>Class: {{item.Class}}</div>
+            <div>Weapon: {{item.Weapon}}</div>
+            <hr />
+        </template>
+    </template>
+    <script>
+        Polymer({
+            is: "demo-firebase",
+            properties: {
+                data:{type:Array, notify:true, value:[]},
+                chars: {
+                    type: Object,
+                    observer: 'dataChanged'
+                }
+            },
+
+            dataChanged: function (newData, oldData) {
+                // do something when the query returns values
+                console.log(newData);
+            }
+        })
+    </script>
+</dom-module>
